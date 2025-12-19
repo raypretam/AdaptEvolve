@@ -1,0 +1,61 @@
+# config_adaptive.yaml
+
+max_iterations: 1  # Single iteration per call (controlled externally)
+checkpoint_interval: 1
+log_level: INFO
+log_dir: null
+random_seed: 42
+
+llm:
+  temperature: 0.6
+  top_p: 0.95
+  max_tokens: 20000
+  timeout: 3600
+  sampling:
+    fn: "random"
+  models:
+    # Will be dynamically set by adaptive selector
+    - name: "placeholder"
+      weight: 1
+      api_base: "http://127.0.0.1:8000/v1"
+      api_key: "dummy"
+
+prompt:
+  system_message: |
+    You are an expert competitive programmer. Write clean, efficient Python code to solve the given problem.
+
+    Follow these rules:
+    1. Analyze the problem and examples carefully.
+    2. Use the optimal algorithm and handle all edge cases.
+    3. Read input from stdin and print output to stdout exactly as in examples.
+
+    Output only the code between # EVOLVE-BLOCK-START and # EVOLVE-BLOCK-END.
+    After the code, give your confidence score (0.0–10.0) inside <confidence> </confidence> tags.
+
+  num_top_programs: 3
+  num_diverse_programs: 2
+  use_template_stochasticity: false
+
+database:
+  population_size: 8
+  archive_size: 3
+  num_islands: 2
+  elite_selection_ratio: 0.3
+  exploration_ratio: 0.2
+  exploitation_ratio: 0.5
+  feature_dimensions: ["pass_rate", "complexity"]
+  feature_bins: 5
+  migration_interval: 4
+  migration_rate: 0.15
+  random_seed: 42
+
+evaluator:
+  timeout: 1200
+  max_retries: 4
+  parallel_evaluations: 32
+  cascade_evaluation: false
+  use_llm_feedback: false
+
+diff_based_evolution: false
+allow_full_rewrites: true
+max_code_length: 50000

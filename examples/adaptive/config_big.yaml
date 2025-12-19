@@ -1,0 +1,87 @@
+# config_large_120b.yaml
+
+# -------------------------------------------------------------------
+# General settings
+# -------------------------------------------------------------------
+max_iterations: 8            # Single iteration per call (controlled by main script)
+checkpoint_interval: 1
+log_level: INFO
+log_dir: null
+random_seed: 42
+
+# -------------------------------------------------------------------
+# LLM configuration - Large Model (32B)
+# -------------------------------------------------------------------
+llm:
+  temperature: 0.6
+  top_p: 0.95
+  max_tokens: 16384
+  timeout: 3600
+  sampling: 
+    fn: "random"
+  models:
+    - name: "Qwen/Qwen3-32B"
+      weight: 1.0
+      api_key: "dummy"
+      api_base: "http://localhost:8000/v1"
+
+# -------------------------------------------------------------------
+# Prompt configuration
+# -------------------------------------------------------------------
+prompt:
+  system_message: |
+    You are an expert competitive programmer. Write clean, efficient Python code to solve the given problem.
+
+    Follow these rules:
+    1. Analyze the problem and examples carefully.
+    2. Use the optimal algorithm and handle all edge cases.
+    3. Read input from stdin and print output to stdout exactly as in examples.
+
+    Output only the code between # EVOLVE-BLOCK-START and # EVOLVE-BLOCK-END. 
+    After the code, give your confidence score (0.0–10.0) inside <confidence> </confidence> tags. No explanations or extra text.
+
+  num_top_programs: 2
+  num_diverse_programs: 1
+  use_template_stochasticity: false
+
+# -------------------------------------------------------------------
+# Database (MAP-Elites + Island) settings
+# -------------------------------------------------------------------
+database:
+  # Evolutionary parameters
+  population_size: 8
+  archive_size: 3
+  num_islands: 2
+
+  # Selection ratios (must sum ≤ 1)
+  elite_selection_ratio: 0.3
+  exploration_ratio: 0.2
+  exploitation_ratio: 0.5
+
+  # MAP-Elites feature grid
+  feature_dimensions: ["pass_rate", "complexity"]
+  feature_bins: 5
+
+  # Migration parameters
+  migration_interval: 4
+  migration_rate: 0.15
+
+  # Seed for deterministic sampling
+  random_seed: 42
+
+# -------------------------------------------------------------------
+# Evaluator settings
+# -------------------------------------------------------------------
+evaluator:
+  timeout: 1200
+  max_retries: 4
+  parallel_evaluations: 64
+  cascade_evaluation: false
+  use_llm_feedback: false
+
+# -------------------------------------------------------------------
+# Evolution settings
+# -------------------------------------------------------------------
+diff_based_evolution: false
+allow_full_rewrites: true
+max_code_length: 50000

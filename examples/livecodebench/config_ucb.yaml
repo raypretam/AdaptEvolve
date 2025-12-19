@@ -1,0 +1,110 @@
+# -------------------------------------------------------------------
+# General settings
+# -------------------------------------------------------------------
+max_iterations: 32           # Reduced from 32 - often enough for good solutions
+checkpoint_interval: 1       # More frequent checkpoints
+log_level: INFO               
+log_dir: null                 
+random_seed: 42               
+
+# -------------------------------------------------------------------
+# LLM ensemble configuration
+# -------------------------------------------------------------------
+llm:
+  temperature: 0.6
+  top_p: 0.95
+  # top_k: 20
+  # min_p: 0
+  max_tokens: 8192
+  # max_new_tokens: 32768
+  timeout: 1200
+  sampling: 
+  #   # fn: "random"
+    # fn: "thompson"
+    fn: "ucb1"
+    # fn: "cost_aware_asymmetric_ts" 
+    explore: 5
+  models:
+    - name: "Qwen/Qwen3-4B"
+      weight: 0.5
+      api_key: "dummy"
+      api_base: "http://127.0.0.0:8889/v1"
+
+    - name: "Qwen/Qwen3-32B"
+      weight: 0.5
+      api_base: "http://127.0.0.0:8888/v1"
+      api_key: "dummy"
+# -------------------------------------------------------------------
+# Prompt configuration
+# -------------------------------------------------------------------
+prompt:
+  system_message: |
+    You are an expert competitive programmer with deep knowledge of algorithms and data structures. 
+    Your task is to solve programming problems by writing clean, efficient Python code.
+
+    Guidelines:
+    1. Carefully analyze the problem statement and examples
+    2. Identify the underlying algorithm or technique required
+    3. Consider time and space complexity
+    4. Handle all edge cases mentioned in constraints
+    5. Write readable code with appropriate variable names
+    6. Ensure the solution reads from stdin and writes to stdout exactly as shown in examples
+    7. Do not include any debugging print statements in the final solution
+
+    Common patterns to consider:
+    - For array problems: two pointers, sliding window, prefix sums
+    - For string problems: pattern matching, dynamic programming
+    - For graph problems: BFS, DFS, shortest paths
+    - For optimization: greedy algorithms, dynamic programming
+    - For number theory: modular arithmetic, prime factorization
+
+    Always verify your solution against the provided examples before submitting.
+    
+    Output ONLY the code between # EVOLVE-BLOCK-START and # EVOLVE-BLOCK-END.
+    No explanations, no comments outside the code block, no markdown.
+
+  num_top_programs: 3         # Reduced for better focus
+  num_diverse_programs: 2     
+  use_template_stochasticity: false
+
+# -------------------------------------------------------------------
+# Database (MAP‐Elites + Island) settings
+# -------------------------------------------------------------------
+database:
+  # Evolutionary parameters
+  population_size: 40         # Reduced from 60
+  archive_size: 20            # Reduced from 30
+  num_islands: 3              # Reduced from 4
+
+  # Selection ratios (must sum ≤ 1)
+  elite_selection_ratio: 0.3  # Increased elite selection
+  exploration_ratio: 0.2      # Reduced exploration
+  exploitation_ratio: 0.5     
+
+  # MAP‐Elites feature grid
+  feature_dimensions: ["pass_rate", "complexity"]
+  feature_bins: 5
+
+  # Migration parameters
+  migration_interval: 10      # More frequent migration
+  migration_rate: 0.15
+
+  # Seed for deterministic sampling
+  random_seed: 42
+
+# -------------------------------------------------------------------
+# Evaluator settings
+# -------------------------------------------------------------------
+evaluator:
+  timeout: 600                 # Reduced from 90 - competitive programming solutions should be fast
+  max_retries: 4
+  parallel_evaluations: 16
+  cascade_evaluation: false    
+  use_llm_feedback: false
+
+# -------------------------------------------------------------------
+# Evolution settings
+# -------------------------------------------------------------------
+diff_based_evolution: false    
+allow_full_rewrites: true
+max_code_length: 100000         

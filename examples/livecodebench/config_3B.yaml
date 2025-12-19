@@ -1,0 +1,95 @@
+# -------------------------------------------------------------------
+# General settings
+# -------------------------------------------------------------------
+max_iterations: 32      # Max LLM‐evolution steps per problem
+checkpoint_interval: 8     # How often to checkpoint the DB to disk
+log_level: INFO               # DEBUG, INFO, WARNING, ERROR
+log_dir: null                 # Uses default under output_dir/logs
+random_seed: 42               # For reproducibility
+
+# -------------------------------------------------------------------
+# LLM ensemble configuration
+# -------------------------------------------------------------------
+llm:
+  temperature: 0.7
+  top_p: 0.95
+  max_tokens: 8192
+  timeout: 600
+  # sampling: 
+  #   # fn: "random"
+  #   # fn: "thompson"
+  #   # fn: "gaussian_thompson"
+  #   fn: "cost_aware_asymmetric_ts" 
+  #   explore: 15
+  models:
+    - name: "Qwen/Qwen2.5-Coder-3B-Instruct"
+      weight: 1
+      api_key: "dummy"
+      api_base: "http://127.0.0.0:8000/v1"
+
+    # - name: "Qwen/Qwen2.5-Coder-32B-Instruct"
+    #   weight: 0.5
+    #   api_base: "http://127.0.0.0:8001/v1"
+    #   api_key: "dummy"
+
+# -------------------------------------------------------------------
+# Prompt configuration
+# -------------------------------------------------------------------
+prompt:
+  system_message: |
+    You are an expert competitive programmer and Python engineer. 
+    You will be given a programming problem. Be aware sometimes variables are written in markdown. 
+    You are to fill the EVOLVE-BLOCK markers, below the instructions.
+
+    Your task is to implement a complete, working solution that:
+    1. Correctly solves the given problem according to the problem description, constraints, and example test cases.
+    2. Handles all edge cases and corner cases
+    3. Follows efficient algorithms and data structures when needed
+
+    Output *only* new code between # EVOLVE-BLOCK-START and # EVOLVE-BLOCK-END—no prose, no markdown, no explanations.
+
+  num_top_programs: 4
+  num_diverse_programs: 4
+  use_template_stochasticity: false
+
+# -------------------------------------------------------------------
+# Database (MAP‐Elites + Island) settings
+# -------------------------------------------------------------------
+database:
+  # Evolutionary parameters
+  population_size: 60
+  archive_size: 30
+  num_islands: 4
+
+  # Selection ratios (must sum ≤ 1)
+  elite_selection_ratio: 0.2
+  exploration_ratio: 0.3
+  exploitation_ratio: 0.6
+
+  # MAP‐Elites feature grid
+  feature_dimensions: ["pass_rate","complexity"]
+  feature_bins: 10
+
+  # Migration parameters
+  migration_interval: 20
+  migration_rate: 0.1
+
+  # Seed for deterministic sampling
+  random_seed: 42
+
+# -------------------------------------------------------------------
+# Evaluator settings
+# -------------------------------------------------------------------
+evaluator:
+  timeout: 90               # seconds per candidate evaluation
+  max_retries: 1
+  parallel_evaluations: 8
+  cascade_evaluation: false    # turn on if you provide evaluate_stageX()
+  use_llm_feedback: false
+
+# -------------------------------------------------------------------
+# Evolution settings
+# -------------------------------------------------------------------
+diff_based_evolution: false    # full‐rewrite mode works best for coding
+allow_full_rewrites: true
+max_code_length: 10000         # abort if LLM returns an enormous response

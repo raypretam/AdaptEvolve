@@ -276,10 +276,10 @@ If you use AdaptEvolve in your research, please cite:
   year={2024}
 }
 ```
-
+<!-- 
 ## 📜 License
 
-This project is licensed under the Apache 2.0 License - see the [LICENSE](LICENSE) file for details.
+This project is licensed under the Apache 2.0 License - see the [LICENSE](LICENSE) file for details. -->
 
 ## 🙏 Acknowledgments
 

@@ -89,8 +89,8 @@ database:
   max_generations: 200
 
 llm:
-  small_model: "gpt-4o-mini"  # 4B-equivalent model
-  large_model: "o1-mini"       # 32B-equivalent model
+  small_model: "4B-equivalent model"
+  large_model: "32B-equivalent model"
   temperature: 0.7
   max_tokens: 2048
 
@@ -198,18 +198,23 @@ print(f"Bottom-K%: {metrics['bottom_k']}")
 
 ## 📈 Benchmarks
 
-### LiveCodeBench Results
+### Comparative Analysis of Adaptive Routing across Benchmarks
 
-| Method | Accuracy | 32B Usage | Cost Efficiency |
-|--------|----------|-----------|-----------------|
-| 4B Iterative | 62.3% | 0% | High |
-| Random Sampling | 67.6% | 58% | Medium |
-| 60% 32B | 68.7% | 60% | Medium |
-| Static DT | 71.1% | 58% | Medium-High |
-| Cascading | 73.9% | 65% | Medium |
-| 90% 32B | 72.3% | 90% | Low |
-| 32B Iterative | 75.2% | 100% | Low |
-| **AdaptEvolve (Ours)** | **73.7%** | **58%** | **High** |
+| Configuration | LiveCodeBench V5 Ratio (S:L) | Cost | Acc | Eff | MBPP Ratio (S:L) | Cost | Acc | Eff |
+|--------------|------------------------------|------|-----|-----|------------------|------|-----|-----|
+| **Baselines** |  |  |  |  |  |  |  |  |
+| 4B Iterative (Lower Bound) | 100:0 | 0.46 | 62.3 | 135.4 | 100:0 | 0.37 | 80.1 | 216.5 |
+| 32B Iterative (Upper Bound) | 0:100 | 3.17 | 75.2 | 23.7 | 0:100 | 1.18 | 94.0 | 79.7 |
+| **Static Routing** |  |  |  |  |  |  |  |  |
+| Decision Tree (Gini, Depth=5) | 43:57 | 2.02 | 71.2 | 35.2 | 96:04 | 0.46 | 82.2 | 178.7 |
+| Random Sampling | 43:57 | 1.98 | 67.5 | 34.1 | 96:04 | 0.45 | 81.3 | 180.7 |
+| **Online Adaptation** |  |  |  |  |  |  |  |  |
+| Adaptive Hoefdding Tree (Bifet and Gavaldà, 2009) | 42:58 | 2.08 | 73.6 | 35.4 | 85:15 | 0.69 | 91.3 | 132.3 |
+| Random Sampling (Online Ratio) | 42:58 | 2.01 | 68.2 | 33.9 | 85:15 | 0.68 | 88.3 | 129.9 |
+
+**Eff (Efficiency) = Accuracy / Compute Cost**  
+Cost denotes compute cost (one 32B call = 1 unit, one 4B call = 0.125 units).
+
 
 ### Key Advantages
 

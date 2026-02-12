@@ -159,6 +159,8 @@ adaptive_llm_selection/
 
 ## 🧪 Experiments
 
+**Hardware:** All experiments were conducted on AMD Instinct GPUs.
+
 ### Decision Tree Training
 
 The system uses a warm-up phase to collect training data for the decision tree router:
